@@ -14,8 +14,8 @@ namespace EvaaCore.Areas.Api.Controllers
 	{
 		//TODO: Mover a variable segura
 		private static readonly string secretKey = "MISUPEREXTRADIFFICULTKEY";
-
-		public ActionResult Get(string username, string password)
+		[HttpPost]
+		public ActionResult Post(LoginModel login)
 		{
 			// Add JWT generation endpoint:
 			var keyByteArray = Encoding.ASCII.GetBytes(secretKey);
@@ -27,14 +27,14 @@ namespace EvaaCore.Areas.Api.Controllers
 				SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
 			};
 			ClaimsIdentity claim;
-			if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+			if (!string.IsNullOrEmpty(login.username) && !string.IsNullOrEmpty(login.password))
 			{
 				//if (user == null)
 				//{
 				//	return NotFound();
 				//}
 
-				System.Security.Principal.GenericIdentity identity = new System.Security.Principal.GenericIdentity(username, "Token");
+				System.Security.Principal.GenericIdentity identity = new System.Security.Principal.GenericIdentity(login.username, "Token");
 
 				claim = new ClaimsIdentity(identity, new Claim[] { });
 			}
@@ -49,7 +49,7 @@ namespace EvaaCore.Areas.Api.Controllers
 			// You can add other claims here, if you want:
 			var claims = new Claim[]
 			{
-				new Claim(JwtRegisteredClaimNames.Sub, username),
+				new Claim(JwtRegisteredClaimNames.Sub, login.username),
 				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 				new Claim(JwtRegisteredClaimNames.Iat, now.Second.ToString(), ClaimValueTypes.Integer64),
 				new Claim("idUser", "111"),
